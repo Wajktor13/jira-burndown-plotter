@@ -69,7 +69,7 @@ class Fetcher:
         
         issue_simple = {
             "done": True if issue_status == "Done" else False,
-            "effortPoints": self.get_effort_points(issue),
+            "storyPoints": self.get_story_points(issue),
             "statusChangeDate": self.convert_date(issue["fields"]["statuscategorychangedate"])
         }
         
@@ -125,14 +125,14 @@ class Fetcher:
     def generate_burndown_data(self, issues_simple, sprints_simple):
         self.log("calculating burndown data")
         
-        total_effort_points = sum(map(lambda i: i["effortPoints"], issues_simple))
+        total_story_points = sum(map(lambda i: i["storyPoints"], issues_simple))
         burndown_data = []
         current_date = sprints_simple[0]["startDate"]
         
         while current_date <= sprints_simple[-1]["endDate"]:
-            effort_points_done = sum(issue["effortPoints"] for issue in issues_simple if
+            story_points_done = sum(issue["storyPoints"] for issue in issues_simple if
                                      issue["done"] and issue["statusChangeDate"] <= current_date)
-            burndown_data.append((current_date, total_effort_points - effort_points_done))
+            burndown_data.append((current_date, total_story_points - story_points_done))
             current_date += timedelta(days=1)
             
         self.log("calculating burndown data done")    
@@ -156,24 +156,13 @@ class Fetcher:
         return img
 
     @staticmethod
-    def get_total_effort_points(issues_simple):
-        return sum(map(lambda i: i["effortPoints"], issues_simple))
+    def get_total_story_points(issues_simple):
+        return sum(map(lambda i: i["storyPoints"], issues_simple))
     
     @staticmethod
-    def get_effort_points(issue):
-        timeTracking = issue["fields"]["timetracking"]
-        
-        if timeTracking is not None and "originalEstimate" in timeTracking:
-            time = timeTracking["originalEstimate"][:-1]
-            
-            if time.isalnum():
-                return int(time)
-            
-            else:
-                time_split = time.split("h")
-                
-                return (int(time_split[0]) * 60) + int(time_split[1])
-                
+    def get_story_points(issue):
+        if "customfield_10031" in issue["fields"]:
+            return issue["fields"]["customfield_10031"]
         return 0
     
     @staticmethod
