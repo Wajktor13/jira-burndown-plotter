@@ -14,17 +14,18 @@ def generate_burndown_plot(burndown_data, sprints_simple, width=14, height=6):
 
     # add vertical lines to separate sprints and add labels below them
     for sprint in sprints_simple:
+
         ax.axvline(x=sprint["startDate"], color="purple")
-        label_x = sprint["startDate"] + timedelta(days=1)
-        ax.text(label_x, -100, sprint["startDate"].strftime("%Y-%m-%d"), ha="center", va="bottom", rotation=45)
+        label_x = sprint["startDate"]
+        ax.text(label_x, -10, sprint["startDate"].strftime("%Y-%m-%d"), ha="center", va="bottom", rotation=45)
         label_x = sprint["startDate"] + (sprint["endDate"] - sprint["startDate"]) / 2
         ax.text(label_x, 0, sprint["name"], ha="center", va="bottom")
         
     # add vertical line and label for the end date of the last sprint
     sprint = sprints_simple[-1]
     ax.axvline(x=sprint["endDate"], color="purple")
-    label_x = sprint["endDate"] - timedelta(days=1)
-    ax.text(label_x, -100, sprint["endDate"].strftime("%Y-%m-%d"), ha="center", va="bottom", rotation=45)
+    label_x = sprint["endDate"]
+    ax.text(label_x, -10, sprint["endDate"].strftime("%Y-%m-%d"), ha="center", va="bottom", rotation=45)
 
     # plot burndown line
     dates, points = zip(*burndown_data)
@@ -51,7 +52,7 @@ def generate_burndown_plot(burndown_data, sprints_simple, width=14, height=6):
     # add marker for current date
     current_date = datetime.now().date()
     ax.axvline(x=current_date, color="deepskyblue", linestyle="-")
-    ax.text(current_date, -100, "Current Date", ha="right", va="bottom", rotation=45)
+    ax.text(current_date + timedelta(1), -10, "Current Date", ha="right", va="bottom", rotation=45)
 
     # adjust y-axis limits to start from 0 and end at the maximum remaining points
     ax.set_ylim(0, max(points) + 100)
