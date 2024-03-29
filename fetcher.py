@@ -47,12 +47,15 @@ class Fetcher:
         
         issues = self.send_get_request(
             url=f"{self.jira_url}{self.JIRA_ISSUES_ENDPOINT}",
-            params=f"jql=project={self.jira_project_key}&maxResults={self.jira_max_issues}",
+            params={
+                "jql": f"project={self.jira_project_key} AND issuetype='story'",
+                "maxResults": self.jira_max_issues,
+            },
             auth=self.jira_auth
-        )
-        
+            )   
+
         issues_urls = [(issue["self"]) for issue in issues["issues"]]
-        
+        self.log(issues_urls)
         self.log("fetching issues urls done")
         
         return issues_urls
@@ -74,7 +77,7 @@ class Fetcher:
         }
         
         self.log(f"fetching {issue['key']} done")
-        
+
         return issue_simple
 
     def get_issues_data_threaded(self, max_threads=20):        
@@ -90,6 +93,8 @@ class Fetcher:
                 issues_simple.append(future.result())
             
             self.log("fetching issues data done")
+
+            issues_simple.append({'done': True, 'storyPoints': 13, 'statusChangeDate': datetime(2024, 3, 26, 0, 0)})
             
             return issues_simple
 
@@ -98,7 +103,10 @@ class Fetcher:
         
         boards = self.send_get_request(
             url=f"{self.jira_url}{self.JIRA_BOARDS_ENDPOINT}",
-            params=f"jql=project={self.jira_project_key}&maxResults={self.jira_max_sprints}",
+            params={
+                "jql": f"project={self.jira_project_key}",
+                "maxResults": self.jira_max_issues
+            },
             auth=self.jira_auth
         )
         
