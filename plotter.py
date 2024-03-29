@@ -52,10 +52,10 @@ def generate_burndown_plot(burndown_data, sprints_simple, width=14, height=6):
     # add marker for current date
     current_date = datetime.now().date()
     ax.axvline(x=current_date, color="deepskyblue", linestyle="-")
-    ax.text(current_date + timedelta(1), -10, "Current Date", ha="right", va="bottom", rotation=45)
+    ax.text(current_date + timedelta(2), -10, "Current Date", ha="right", va="bottom", rotation=45)
 
     # adjust y-axis limits to start from 0 and end at the maximum remaining points
-    ax.set_ylim(0, max(points) + 100)
+    ax.set_ylim(0, int(max(points) * 1.15))
     
     # find the maximum end date among sprints to set x-axis limit
     max_end_date = max(sprint["endDate"] for sprint in sprints_simple)
