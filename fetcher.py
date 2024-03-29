@@ -55,7 +55,7 @@ class Fetcher:
             )   
 
         issues_urls = [(issue["self"]) for issue in issues["issues"]]
-        self.log(issues_urls)
+
         self.log("fetching issues urls done")
         
         return issues_urls
@@ -93,8 +93,6 @@ class Fetcher:
                 issues_simple.append(future.result())
             
             self.log("fetching issues data done")
-
-            issues_simple.append({'done': True, 'storyPoints': 13, 'statusChangeDate': datetime(2024, 3, 26, 0, 0)})
             
             return issues_simple
 
